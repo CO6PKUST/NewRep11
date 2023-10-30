@@ -1,4 +1,4 @@
-package hibernate_Test;
+package hibernate_Test.Person;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

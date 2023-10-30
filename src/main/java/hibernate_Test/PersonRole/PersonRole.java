@@ -1,8 +1,10 @@
-package hibernate_Test;
+package hibernate_Test.PersonRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Getter;
 
 @Getter
@@ -10,6 +12,7 @@ import lombok.Getter;
 @Table(name = "personrole")
 public class PersonRole {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
     private int role_id;
     @Column(name = "rolename")
