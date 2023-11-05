@@ -15,7 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import ru.mylearning.myspringprojecttest1.Services.PersonService;
+import ru.mylearning.myspringprojecttest1.Services.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +23,7 @@ import ru.mylearning.myspringprojecttest1.Services.PersonService;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final PersonService personService;
+    private final UserService userService;
     @Bean
     public PasswordEncoder passwordEncoder(){
 
@@ -55,7 +55,7 @@ public class SecurityConfig {
     DaoAuthenticationProvider daoAuthenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(personService);
+        daoAuthenticationProvider.setUserDetailsService(userService);
         return daoAuthenticationProvider;
     }
 

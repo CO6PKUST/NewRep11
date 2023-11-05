@@ -46,11 +46,19 @@ public class JwtTokenUtils {
                 .compact();
     }
 
-    private Claims getAllClaimsFromToken(String token){
-        return Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parse(token).
+    public String getUserName(String token){
+        return getAllClaimsFromToken(token).getSubject();
     }
 
+    public List<String> getRoles(String token){
+        return getAllClaimsFromToken(token).get("roles", List.class);
+    }
+
+    private Claims getAllClaimsFromToken(String token){
+        return (Claims) Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parse(token)
+                .getPayload();
+    }
 }

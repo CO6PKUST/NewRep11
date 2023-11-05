@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Table(name = "personrole")
 @Slf4j
-public class PersonRole {
+public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")

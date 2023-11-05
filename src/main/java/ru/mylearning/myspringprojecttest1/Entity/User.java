@@ -2,18 +2,17 @@ package ru.mylearning.myspringprojecttest1.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 
 @Data
 @Entity
 @Table(name = "person")
-public class Person {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id")
-    private Integer personId;
+    private Integer userId;
     @Column(name = "firstname")
     private String firstName;
     @Column(name = "secondname")
@@ -23,7 +22,7 @@ public class Person {
     @Column(name = "hashpassword")
     private String hashPassword;
     @Column(name = "nickname")
-    private String nickName;
+    private String userName;
     @Column(name = "enabled")
     private boolean enabled;
     @ManyToMany
@@ -32,7 +31,7 @@ public class Person {
             joinColumns = @JoinColumn(name = "person_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Collection<PersonRole> personRoles;
+    private Collection<UserRole> userRoles;
 
 
 }
