@@ -3,6 +3,7 @@ package ru.mylearning.myspringprojecttest1.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-
+@Slf4j
 public class JwtTokenUtils {
 
     @Value("${jwt.secret}")
@@ -28,7 +29,9 @@ public class JwtTokenUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+
     public String generateToken(UserDetails userDetails){
+        log.info("генерация токена generateToken");
         Map<String, Object> claims = new HashMap<>();
         List<String> rolesList = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -39,12 +42,14 @@ public class JwtTokenUtils {
         Date expiredDate = new Date(issueDate.getTime() + jwtLifetime.toMillis());
         return Jwts.builder()
                 .claims(claims)
-                .subject(userDetails.getUsername())
                 .issuedAt(issueDate)
                 .expiration(expiredDate)
+                .subject(userDetails.getUsername())
                 .signWith(getSecretKey())
                 .compact();
     }
+
+
 
     public String getUserName(String token){
         return getAllClaimsFromToken(token).getSubject();
@@ -55,6 +60,7 @@ public class JwtTokenUtils {
     }
 
     private Claims getAllClaimsFromToken(String token){
+        log.info("получение информации из токена getAllClaimsFromToken");
         return (Claims) Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()

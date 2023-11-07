@@ -1,5 +1,6 @@
 package ru.mylearning.myspringprojecttest1.Services;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
+@Slf4j
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -23,14 +24,17 @@ public class UserService implements UserDetailsService {
 
 
     public Optional<User> findByUserName(String userName){
+        log.info("пользователь найден findByUserName");
         return userRepository.findByUserName(userName);
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        log.info("загрузка пользователя по его имени loadUserByUsername");
         User user = findByUserName(userName).orElseThrow(()-> new UsernameNotFoundException(
                 String.format("пользователь '%s' не найден", userName)
+
         ));
         return new org.springframework.security.core.userdetails.User(
                 user.getUserName(),

@@ -1,6 +1,7 @@
 package ru.mylearning.myspringprojecttest1.Security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,17 @@ import ru.mylearning.myspringprojecttest1.Services.UserService;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true)
+@Slf4j
 public class SecurityConfig {
 
     private final UserService userService;
     @Bean
-    public PasswordEncoder passwordEncoder(){
 
-        return new BCryptPasswordEncoder(15);
+    public PasswordEncoder passwordEncoder(){
+        log.warn("метод passwordEncoder");
+
+
+        return new BCryptPasswordEncoder();
 
     }
     @Bean
