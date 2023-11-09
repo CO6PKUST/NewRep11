@@ -9,22 +9,22 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class MainController {
 
-    @GetMapping("/returnUnsecuredData")
+    @GetMapping("/unsecured")
     public String returnUnsecuredData(){
         return "unsecuredData";
     }
 
-    @GetMapping("/returnSecuredData")
+    @GetMapping("/secured")
     public String returnSecuredData(){
         return "securedData";
     }
 
-    @GetMapping("/returnAdminData")
+    @GetMapping("/admin")
     public String returnAdminData(){
         return "returnAdminData";
     }
 
-    @GetMapping("/returnInfo")
+    @GetMapping("/info")
     public String returnInfo(Principal principal){
         return principal.getName();
     }

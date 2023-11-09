@@ -53,6 +53,7 @@ public class UserService implements UserDetailsService {
         user.setEmail(registrationUserDto.getEmail());
         user.setHashPassword(passwordEncoderConfiguration.passwordEncoder().encode(registrationUserDto.getPassword()));
         user.setUserRoles(List.of(userRoleService.getUserRole()));
+        user.setEnabled(true);
         return userRepository.save(user);
     }
 }
