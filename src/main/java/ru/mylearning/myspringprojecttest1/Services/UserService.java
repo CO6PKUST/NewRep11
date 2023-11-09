@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
+import ru.mylearning.myspringprojecttest1.Config.PasswordEncoderConfiguration;
+import ru.mylearning.myspringprojecttest1.Dtos.RegistrationUserDto;
 import ru.mylearning.myspringprojecttest1.Entity.User;
 import ru.mylearning.myspringprojecttest1.Repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserRoleService userRoleService;
+    private  final PasswordEncoderConfiguration passwordEncoderConfiguration;
 
 
     public Optional<User> findByUserName(String userName){
@@ -44,8 +47,12 @@ public class UserService implements UserDetailsService {
                         .collect(Collectors.toList())
         );
     }
-    public void createNewUser(User user){
-        user.setUserRoles(List.of(userRoleService.findByRoleName("ROLE_USER").get()));
-        userRepository.save(user);
+    public User createNewUser(RegistrationUserDto registrationUserDto){
+        User user = new User();
+        user.setUserName(registrationUserDto.getUserName());
+        user.setEmail(registrationUserDto.getEmail());
+        user.setHashPassword(passwordEncoderConfiguration.passwordEncoder().encode(registrationUserDto.getPassword()));
+        user.setUserRoles(List.of(userRoleService.getUserRole()));
+        return userRepository.save(user);
     }
 }

@@ -12,7 +12,9 @@ import java.util.Optional;
 public class UserRoleService {
     private final UserRoleRepository userRoleRepository;
 
-    public Optional<UserRole> findByRoleName(String roleName){
-        return userRoleRepository.findByRoleName(roleName);
+    public UserRole getUserRole(){
+        return userRoleRepository.findByRoleName("ROLE_USER").orElseThrow();
     }
+
+
 }
