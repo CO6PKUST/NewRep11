@@ -1,9 +1,6 @@
 package ru.mylearning.myspringprojecttest1.Services;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +24,6 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserRoleService userRoleService;
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
-    private final EntityManager entityManager;
 
 
     public Optional<User> findByUserName(String userName){
