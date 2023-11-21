@@ -33,5 +33,10 @@ public class User {
     )
     private Collection<UserRole> userRoles;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private UserProfile userProfile;
+
+
 
 }

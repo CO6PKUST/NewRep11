@@ -8,6 +8,8 @@ public class RegistrationUserDto {
     private String password;
     private String confirmPassword;
     private boolean enabled;
+    private String firstName;
+    private String secondName;
 
 
 }
