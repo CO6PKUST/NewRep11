@@ -12,7 +12,6 @@ public class RegistrationUserDto {
     private String email;
     private String password;
     private String confirmPassword;
-    private String userName;
     private boolean enabled;
 
 

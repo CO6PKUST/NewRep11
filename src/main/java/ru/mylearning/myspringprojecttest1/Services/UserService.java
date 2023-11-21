@@ -1,6 +1,9 @@
 package ru.mylearning.myspringprojecttest1.Services;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,12 +27,17 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserRoleService userRoleService;
-    private  final PasswordEncoderConfiguration passwordEncoderConfiguration;
+    private final PasswordEncoderConfiguration passwordEncoderConfiguration;
+    private final EntityManager entityManager;
 
 
     public Optional<User> findByUserName(String userName){
         log.info("пользователь найден findByUserName");
         return userRepository.findByUserName(userName);
+    }
+    public Optional<User> findByEmail (String Email){
+        log.info("пользователь найден  findByEmail");
+        return userRepository.findByEmail(Email);
     }
 
     @Override
@@ -47,9 +56,17 @@ public class UserService implements UserDetailsService {
                         .collect(Collectors.toList())
         );
     }
+
+    private String createUserName(){
+    return "user" + userRepository.getLastInsertedPersonId();
+    }
     public User createNewUser(RegistrationUserDto registrationUserDto){
+
         User user = new User();
-        user.setUserName(registrationUserDto.getUserName());
+        user.setUserName(
+                createUserName()
+                //registrationUserDto.getEmail().split("@")[0]
+                 );
         user.setEmail(registrationUserDto.getEmail());
         user.setHashPassword(passwordEncoderConfiguration.passwordEncoder().encode(registrationUserDto.getPassword()));
         user.setUserRoles(List.of(userRoleService.getUserRole()));

@@ -49,7 +49,7 @@ public class AuthService {
         if(!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пароли не совпадают"), HttpStatus.BAD_REQUEST);
         }
-        if(userService.findByUserName(registrationUserDto.getUserName()).isPresent()){
+        if(userService.findByEmail(registrationUserDto.getEmail()).isPresent()){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пользователь уже зарегистрирован"), HttpStatus.BAD_REQUEST);
         }
 
