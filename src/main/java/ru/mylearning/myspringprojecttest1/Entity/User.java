@@ -13,13 +13,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id")
     private Integer userId;
-    @Column(name = "firstname")
+    @Column(name = "first_name")
     private String firstName;
-    @Column(name = "secondname")
+    @Column(name = "second_name")
     private String secondName;
     @Column(name = "email")
     private String email;
-    @Column(name = "hashpassword")
+    @Column(name = "password")
     private String hashPassword;
     @Column(name = "nickname")
     private String userName;

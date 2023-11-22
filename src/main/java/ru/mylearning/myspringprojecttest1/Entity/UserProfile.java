@@ -3,7 +3,8 @@ package ru.mylearning.myspringprojecttest1.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -14,20 +15,20 @@ public class UserProfile {
     private Integer userId;
     @Column(name = "sex")
     private boolean sex;
-    @Column(name = "aboutme")
+    @Column(name = "about_me")
     private String aboutMe;
-    @Column(name = "dateregistration")
-    private Date dateRegistration;
-    @Column(name = "personpic")
+    @Column(name = "registration_date_time")
+    private LocalDateTime registrationDateTime;
+    @Column(name = "person_pic")
     private Integer userPic;
-    @Column(name = "personcover")
+    @Column(name = "person_cover")
     private Integer userCover;
-    @Column(name = "numberbankcard")
+    @Column(name = "number_bank_card")
     private String numberBankCard;
     @Column(name = "birthday")
-    private Date birthday;
-    @Column(name = "lastonline")
-    private Date lastOnline;
+    private LocalDate birthday;
+    @Column(name = "last_online")
+    private LocalDateTime lastOnline;
 
     @OneToOne
     @MapsId
