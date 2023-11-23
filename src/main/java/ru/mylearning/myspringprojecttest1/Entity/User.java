@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -20,9 +21,10 @@ public class User {
     @Column(name = "email")
     private String email;
     @Column(name = "password")
-    private String hashPassword;
+    private String password;
     @Column(name = "nickname")
-    private String userName;
+    private String userName = "user" + UUID.randomUUID();
+
     @Column(name = "enabled")
     private boolean enabled;
     @ManyToMany
@@ -32,11 +34,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Collection<UserRole> userRoles;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private UserProfile userProfile;
-
-
-
 }

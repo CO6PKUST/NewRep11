@@ -7,14 +7,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mylearning.myspringprojecttest1.Config.PasswordEncoderConfiguration;
-import ru.mylearning.myspringprojecttest1.Dtos.RegistrationUserDto;
+import ru.mylearning.myspringprojecttest1.Dtos.UserRegistrationDto;
 import ru.mylearning.myspringprojecttest1.Entity.User;
+import ru.mylearning.myspringprojecttest1.Mappers.UserMapper;
 import ru.mylearning.myspringprojecttest1.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,28 +47,19 @@ public class UserService implements UserDetailsService {
         ));
         return new org.springframework.security.core.userdetails.User(
                 user.getUserName(),
-                user.getHashPassword(),
+                user.getPassword(),
                 user.getUserRoles().stream()
                         .map(userRole -> new SimpleGrantedAuthority(userRole.getRoleName()))
                         .collect(Collectors.toList())
         );
     }
+    public User createNewUser(UserRegistrationDto userRegistrationDto){
+        User user = UserMapper.INSTANCE.mapToUser(userRegistrationDto);
 
-    private String createUserName(){
-    return "user" + userRepository.getLastInsertedPersonId();
-    }
-    public User createNewUser(RegistrationUserDto registrationUserDto){
-        User user = new User();
-        user.setUserName(
-                createUserName()
-                 );
-        user.setEmail(registrationUserDto.getEmail());
-        user.setHashPassword(passwordEncoderConfiguration.passwordEncoder().encode(registrationUserDto.getPassword()));
-        user.setUserRoles(List.of(userRoleService.getUserRole()));
-        user.setFirstName(registrationUserDto.getFirstName());
-        user.setSecondName(registrationUserDto.getSecondName());
-        user.setEnabled(true);
-        user.setUserProfile(userProfileService.createUserProfileFromNewUser(user));
+        user.setPassword(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()));
+        user.setUserRoles(new ArrayList<>(List.of(userRoleService.getUserRole())));
+        //user.setUserRoles(new ArrayList<>(Collections.singletonList(userRoleService.getUserRole())));
+        userProfileService.createUserProfileFromNewUser(user);
         return userRepository.save(user);
     }
 }

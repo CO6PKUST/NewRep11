@@ -18,7 +18,7 @@ public class UserProfile {
     @Column(name = "about_me")
     private String aboutMe;
     @Column(name = "registration_date_time")
-    private LocalDateTime registrationDateTime;
+    private LocalDateTime registrationDateTime = LocalDateTime.now();
     @Column(name = "person_pic")
     private Integer userPic;
     @Column(name = "person_cover")
@@ -28,11 +28,10 @@ public class UserProfile {
     @Column(name = "birthday")
     private LocalDate birthday;
     @Column(name = "last_online")
-    private LocalDateTime lastOnline;
+    private LocalDateTime lastOnline = LocalDateTime.now();
 
-    @OneToOne
     @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")
     private User user;
-
 }

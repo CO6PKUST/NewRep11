@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.mylearning.myspringprojecttest1.Dtos.JwtRequest;
 import ru.mylearning.myspringprojecttest1.Dtos.JwtResponse;
-import ru.mylearning.myspringprojecttest1.Dtos.RegistrationUserDto;
+import ru.mylearning.myspringprojecttest1.Dtos.UserRegistrationDto;
 import ru.mylearning.myspringprojecttest1.Dtos.UserDto;
 import ru.mylearning.myspringprojecttest1.Entity.User;
 import ru.mylearning.myspringprojecttest1.Exceptions.AppError;
@@ -45,19 +45,15 @@ public class AuthService {
     }
 
 
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto){
-        if(!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())){
+    public ResponseEntity<?> createNewUser(@RequestBody UserRegistrationDto userRegistrationDto){
+        if(!userRegistrationDto.getPassword().equals(userRegistrationDto.getConfirmPassword())){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пароли не совпадают"), HttpStatus.BAD_REQUEST);
         }
-        if(userService.findByEmail(registrationUserDto.getEmail()).isPresent()){
+        if(userService.findByEmail(userRegistrationDto.getEmail()).isPresent()){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пользователь уже зарегистрирован"), HttpStatus.BAD_REQUEST);
         }
 
-
-        User user = userService.createNewUser(registrationUserDto);
+        User user = userService.createNewUser(userRegistrationDto);
         return ResponseEntity.ok(new UserDto(user.getUserId(), user.getEmail(), user.getUserName()));
     }
-
-
-
 }
