@@ -5,11 +5,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mylearning.myspringprojecttest1.Config.PasswordEncoderConfiguration;
 import ru.mylearning.myspringprojecttest1.Dtos.UserRegistrationDto;
 import ru.mylearning.myspringprojecttest1.Entity.User;
-import ru.mylearning.myspringprojecttest1.Mappers.UserMapper;
 import ru.mylearning.myspringprojecttest1.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +30,7 @@ public class UserService implements UserDetailsService {
     private final UserRoleService userRoleService;
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     private final UserProfileService userProfileService;
+    //OAuth2UserService
 
 
 
@@ -36,6 +42,15 @@ public class UserService implements UserDetailsService {
         log.info("пользователь найден  findByEmail");
         return userRepository.findByEmail(Email);
     }
+    private org.springframework.security.core.userdetails.User loadUser (User user){
+        return new org.springframework.security.core.userdetails.User(
+                user.getUserName(),
+                user.getPassword(),
+                user.getUserRoles().stream()
+                        .map(userRole -> new SimpleGrantedAuthority(userRole.getRoleName()))
+                        .collect(Collectors.toList())
+        );
+    }
 
     @Override
     @Transactional
@@ -45,21 +60,30 @@ public class UserService implements UserDetailsService {
                 String.format("пользователь '%s' не найден", userName)
 
         ));
-        return new org.springframework.security.core.userdetails.User(
-                user.getUserName(),
-                user.getPassword(),
-                user.getUserRoles().stream()
-                        .map(userRole -> new SimpleGrantedAuthority(userRole.getRoleName()))
-                        .collect(Collectors.toList())
-        );
+        return loadUser(user);
     }
-    public User createNewUser(UserRegistrationDto userRegistrationDto){
-        User user = UserMapper.INSTANCE.mapToUser(userRegistrationDto);
+    @Transactional
+    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException{
+        log.info("загрузка пользователя по его имени loadUserByUsername");
+        User user = findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(
+                String.format("пользователь '%s' не найден", email)
 
+        ));
+        return loadUser(user);
+    }
+
+
+    public User createNewUser(UserRegistrationDto userRegistrationDto){
+        User user = new User();
+        user.setFirstName(userRegistrationDto.getFirstName());
+        user.setSecondName(userRegistrationDto.getSecondName());
+        user.setEmail(userRegistrationDto.getEmail());
         user.setPassword(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()));
         user.setUserRoles(new ArrayList<>(List.of(userRoleService.getUserRole())));
-        //user.setUserRoles(new ArrayList<>(Collections.singletonList(userRoleService.getUserRole())));
         userProfileService.createUserProfileFromNewUser(user);
         return userRepository.save(user);
     }
+
+
+
 }
