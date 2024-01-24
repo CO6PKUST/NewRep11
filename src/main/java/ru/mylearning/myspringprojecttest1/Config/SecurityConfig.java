@@ -13,9 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.mylearning.myspringprojecttest1.Services.AuthService;
 import ru.mylearning.myspringprojecttest1.Services.UserService;
 import ru.mylearning.myspringprojecttest1.handler.MySimpleUrlAuthenticationSuccessHandler;
 
@@ -47,9 +45,8 @@ public class SecurityConfig {
 //                .exceptionHandling(exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .oauth2Login(
                         oauth2 -> oauth2
-//                        .successHandler(mySimpleUrlAuthenticationSuccessHandler)
-                                .defaultSuccessUrl("/authWithOauth")
-//                        Customizer.withDefaults()
+                        .successHandler(mySimpleUrlAuthenticationSuccessHandler)
+
                 )
                 .logout(Customizer.withDefaults())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
@@ -58,18 +55,17 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-      return authenticationConfiguration.getAuthenticationManager();
-    }
-
     @Bean
     DaoAuthenticationProvider daoAuthenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoderConfiguration.passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userService);
         return daoAuthenticationProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
 

@@ -13,8 +13,7 @@ import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.mylearning.myspringprojecttest1.Dtos.UserRegistrationDto;
-import ru.mylearning.myspringprojecttest1.Mappers.MapOauth2ToUserRegistrationDto;
+import ru.mylearning.myspringprojecttest1.Services.UserOauth2Service;
 
 import java.io.IOException;
 
@@ -25,7 +24,7 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
 
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-    private final MapOauth2ToUserRegistrationDto mapOauth2ToUserRegistrationDto = new MapOauth2ToUserRegistrationDto();
+    private final UserOauth2Service userOauth2Service;
 
 
 
@@ -33,41 +32,16 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
+        String targetUrl = UriComponentsBuilder
+                .fromUriString("/loginPage")
+                .queryParam("token", userOauth2Service.getAuthToken(oAuth2User))
 
-        log.info("onAuthenticationSuccess");
-//        UserRegistrationDto userRegistrationDto = mapOauth2ToUserRegistrationDto.mapToUserRegistrationDto(oAuth2User);
-//        //clearAuthenticationAttributes(request);
-//
-//     //   String targetUrl = determineTargetUrl(authentication);
-//
-//        String targetUrl = UriComponentsBuilder.fromUriString("/authWithOauth2")
-//                .queryParam("email", (String) oAuth2User.getAttribute("email"))
-//                .build().toUriString();
-//        log.info(targetUrl);
-//
-//
-//
-        redirectStrategy.sendRedirect(request, response, "/authWithOauth");
+                .build().toUriString();
 
+        redirectStrategy.sendRedirect(request, response, targetUrl);
+        clearAuthenticationAttributes(request);
 
     }
-
-//    protected String determineTargetUrl(final Authentication authentication) {
-//
-//        Map<String, String> roleTargetUrlMap = new HashMap<>();
-//        roleTargetUrlMap.put("ROLE_USER", "/homepage.html");
-//        roleTargetUrlMap.put("ROLE_ADMIN", "/console.html");
-//
-//        final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-//        for (final GrantedAuthority grantedAuthority : authorities) {
-//            String authorityName = grantedAuthority.getAuthority();
-//            if(roleTargetUrlMap.containsKey(authorityName)) {
-//                return roleTargetUrlMap.get(authorityName);
-//            }
-//        }
-//
-//        throw new IllegalStateException();
-//    }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -76,7 +50,4 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
         }
         session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     }
-
-
-
 }

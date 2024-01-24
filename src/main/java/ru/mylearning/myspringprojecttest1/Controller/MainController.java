@@ -15,7 +15,6 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @Slf4j
 public class MainController {
-    HttpServletResponse httpServletResponse;
 
     @GetMapping("/secured")
     public String returnSecuredData(){
@@ -25,6 +24,16 @@ public class MainController {
     @GetMapping("/")
     public String returnUnsecuredData(){
         return "unsecuredData";
+    }
+
+    @GetMapping("/loginPage")
+    public String returnLoginPage(){
+        return "это страница авторизации";
+    }
+
+    @GetMapping("/info")
+    public String returnInfo(Principal principal){
+        return principal.getName();
     }
 
 

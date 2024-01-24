@@ -5,12 +5,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mylearning.myspringprojecttest1.Config.PasswordEncoderConfiguration;
 import ru.mylearning.myspringprojecttest1.Dtos.UserRegistrationDto;
@@ -30,7 +24,6 @@ public class UserService implements UserDetailsService {
     private final UserRoleService userRoleService;
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     private final UserProfileService userProfileService;
-    //OAuth2UserService
 
 
 
