@@ -32,22 +32,8 @@ public class MySimpleUrlAuthenticationSuccessHandler implements AuthenticationSu
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-        String targetUrl = UriComponentsBuilder
-                .fromUriString("/loginPage")
-                .queryParam("token", userOauth2Service.getAuthToken(oAuth2User))
+        response.getWriter().write("{\"token\": \"" + userOauth2Service.getAuthToken(oAuth2User) + "\"}");
+//        response.getWriter().flush();
 
-                .build().toUriString();
-
-        redirectStrategy.sendRedirect(request, response, targetUrl);
-        clearAuthenticationAttributes(request);
-
-    }
-
-    protected void clearAuthenticationAttributes(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return;
-        }
-        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     }
 }
