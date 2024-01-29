@@ -26,11 +26,6 @@ public class MainController {
         return "unsecuredData";
     }
 
-    @GetMapping("/loginPage")
-    public String returnLoginPage(){
-        return "это страница авторизации";
-    }
-
     @GetMapping("/info")
     public String returnInfo(Principal principal){
         return principal.getName();
