@@ -15,21 +15,18 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.mylearning.myspringprojecttest1.Services.UserService;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true)
 @Slf4j
 public class SecurityConfig {
-
     private final UserService userService;
     private final JwtRequestFilter jwtRequestFilter;
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
-
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
@@ -39,8 +36,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .exceptionHandling(exception -> exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-
         return http.build();
     }
     @Bean

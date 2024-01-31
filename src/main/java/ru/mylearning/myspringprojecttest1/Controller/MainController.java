@@ -2,7 +2,9 @@ package ru.mylearning.myspringprojecttest1.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.mylearning.myspringprojecttest1.Services.AuthServiceOauth;
 
 import java.security.Principal;
 /*
@@ -14,6 +16,8 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @Slf4j
 public class MainController {
+
+    private final AuthServiceOauth authServiceOauth;
 
     @GetMapping("/secured")
     public String returnSecuredData(){
@@ -29,6 +33,8 @@ public class MainController {
     public String returnInfo(Principal principal){
         return principal.getName();
     }
+
+
 
 
 

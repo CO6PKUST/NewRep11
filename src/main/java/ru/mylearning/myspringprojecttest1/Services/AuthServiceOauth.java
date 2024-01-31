@@ -1,53 +1,94 @@
 package ru.mylearning.myspringprojecttest1.Services;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.mylearning.myspringprojecttest1.Dtos.OauthCodeDto;
+import ru.mylearning.myspringprojecttest1.Dtos.UserGoogleResponseDto;
+import io.jsonwebtoken.Jwts;
+import ru.mylearning.myspringprojecttest1.utils.JwtTokenUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthServiceOauth {
     private final static String CLIENT_ID = "888245132190-ur9ifn150cl4ralmnank5on5riaqdv28.apps.googleusercontent.com";
-    private final static String CLIENT_SECRET = "client-secret=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";
+    private final static String CLIENT_SECRET = "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";
     private final static String REDIRECT_URI = "http://localhost:8080/login/oauth2/code/google";
+
+    private final static String RESOURCE_URL_GOOGLE = "https://oauth2.googleapis.com";
 
     public ResponseEntity<?> getAuthToken(@RequestBody OauthCodeDto oauthCodeDto){
         log.info("метод getAuthToken класса AuthServiceOauth");
-        return ResponseEntity.ok(getTokenOauth(oauthCodeDto.getCode()));
+        return ResponseEntity.ok(getTokenOauth(java.net.URLDecoder.decode(oauthCodeDto.getCode(), StandardCharsets.UTF_8)));
     }
 
-    private String getTokenOauth(String code){
-        log.info("метод etTokenOauth класса AuthServiceOauth");
-        WebClient webClient = WebClient.create("https://oauth2.googleapis.com");
+//    private String getTokenOauth(String code){
+//        log.info("метод etTokenOauth класса AuthServiceOauth");
+//        WebClient webClient = WebClient.create("https://oauth2.googleapis.com");
+//
+//        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+//        formData.add("code", code);
+//        formData.add("client_id", CLIENT_ID);
+//        formData.add("client_secret", CLIENT_SECRET);
+//        formData.add("redirect_uri", REDIRECT_URI);
+//        formData.add("grant_type", "authorization_code");
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//        return webClient.post()
+//                .uri("/token")
+//                .body(BodyInserters.fromFormData(formData))
+//                .headers(h -> h.addAll(headers))
+//                .retrieve()
+//                .bodyToMono(String.class)
+//                .block();
+//    }
 
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+    private ResponseEntity<?> getTokenOauth(String code){
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> formData= new LinkedMultiValueMap<>();
         formData.add("code", code);
         formData.add("client_id", CLIENT_ID);
         formData.add("client_secret", CLIENT_SECRET);
         formData.add("redirect_uri", REDIRECT_URI);
         formData.add("grant_type", "authorization_code");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
 
-        return webClient.post()
-                .uri("/token")
-                .body(BodyInserters.fromFormData(formData))
-                .headers(h -> h.addAll(headers))
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        ResponseEntity<UserGoogleResponseDto> responseEntity = restTemplate.postForEntity(
+                RESOURCE_URL_GOOGLE + "/token", request , UserGoogleResponseDto.class);
+        if (responseEntity.getStatusCode().is2xxSuccessful()){
+            String idToken = responseEntity.getBody().getId_token();
+
+            Jwts.parser().b64Url()
+
+
+
+        }
+
+
+        return responseEntity;
     }
+
+
+
 
 
 }
