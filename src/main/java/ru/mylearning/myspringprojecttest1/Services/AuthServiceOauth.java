@@ -3,6 +3,7 @@ package ru.mylearning.myspringprojecttest1.Services;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -76,11 +77,11 @@ public class AuthServiceOauth {
                 RESOURCE_URL_GOOGLE + "/token", request , UserGoogleResponseDto.class);
         if (responseEntity.getStatusCode().is2xxSuccessful()){
             String idToken = responseEntity.getBody().getId_token();
+            String[] chunks = idToken.split("\\.");
+            String payloadStr = new String(Base64.getUrlDecoder().decode(chunks[1]));
 
-            Jwts.parser().b64Url()
-
-
-
+            JSONObject jsonObject = new JSONObject(payloadStr);
+            String email = jsonObject.getString("email");
         }
 
 
