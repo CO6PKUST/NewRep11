@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import ru.mylearning.myspringprojecttest1.Dtos.OauthCodeDto;
 import ru.mylearning.myspringprojecttest1.Dtos.UserGoogleResponseDto;
 import io.jsonwebtoken.Jwts;
+import ru.mylearning.myspringprojecttest1.Exceptions.AppError;
 import ru.mylearning.myspringprojecttest1.utils.JwtTokenUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -30,33 +31,14 @@ public class AuthServiceOauth {
 
     private final static String RESOURCE_URL_GOOGLE = "https://oauth2.googleapis.com";
 
+
+    private final UserService userService;
+    private final UserOauthService userOauthService;
+
     public ResponseEntity<?> getAuthToken(@RequestBody OauthCodeDto oauthCodeDto){
         log.info("метод getAuthToken класса AuthServiceOauth");
         return ResponseEntity.ok(getTokenOauth(java.net.URLDecoder.decode(oauthCodeDto.getCode(), StandardCharsets.UTF_8)));
     }
-
-//    private String getTokenOauth(String code){
-//        log.info("метод etTokenOauth класса AuthServiceOauth");
-//        WebClient webClient = WebClient.create("https://oauth2.googleapis.com");
-//
-//        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-//        formData.add("code", code);
-//        formData.add("client_id", CLIENT_ID);
-//        formData.add("client_secret", CLIENT_SECRET);
-//        formData.add("redirect_uri", REDIRECT_URI);
-//        formData.add("grant_type", "authorization_code");
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//
-//        return webClient.post()
-//                .uri("/token")
-//                .body(BodyInserters.fromFormData(formData))
-//                .headers(h -> h.addAll(headers))
-//                .retrieve()
-//                .bodyToMono(String.class)
-//                .block();
-//    }
 
     private ResponseEntity<?> getTokenOauth(String code){
         RestTemplate restTemplate = new RestTemplate();
@@ -82,10 +64,13 @@ public class AuthServiceOauth {
 
             JSONObject jsonObject = new JSONObject(payloadStr);
             String email = jsonObject.getString("email");
+
+            if(userService.findByEmail(email).isPresent()){
+                return ResponseEntity.ok(userOauthService.createAuthTokenByEmail(email));
+            }
+            return ResponseEntity.ok(userOauthService.createAuthTokenByEmail(userOauthService.createNewUser(jsonObject).getEmail()));
         }
-
-
-        return responseEntity;
+        return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пока не придумал"), HttpStatus.BAD_REQUEST);
     }
 
 
