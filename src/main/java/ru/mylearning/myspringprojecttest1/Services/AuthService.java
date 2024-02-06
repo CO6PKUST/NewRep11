@@ -24,34 +24,31 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
 
-    private String createAuthTokenByUserName(String userName){
-        UserDetails userDetails = userService.loadUserByUsername(userName);
+    private String createAuthTokenByEmail(String email){
+        UserDetails userDetails = userService.loadUserByEmail(email);
         return jwtTokenUtils.generateToken(userDetails);
     }
 
 
     public ResponseEntity<?> getAuthToken(@RequestBody JwtRequest authRequest){
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
         } catch (BadCredentialsException e){
             return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "неправильный логин или пароль"), HttpStatus.UNAUTHORIZED);
         }
 
-        return ResponseEntity.ok(createAuthTokenByUserName(authRequest.getUserName()));
+        return ResponseEntity.ok(createAuthTokenByEmail(authRequest.getEmail()));
 
     }
 
 
     public ResponseEntity<?> createNewUser(@RequestBody UserRegistrationDto userRegistrationDto){
-        if(!userRegistrationDto.getPassword().equals(userRegistrationDto.getConfirmPassword())){
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пароли не совпадают"), HttpStatus.BAD_REQUEST);
-        }
         if(userService.findByEmail(userRegistrationDto.getEmail()).isPresent()){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пользователь уже зарегистрирован"), HttpStatus.BAD_REQUEST);
         }
 
         User user = userService.createNewUser(userRegistrationDto);
-        return ResponseEntity.ok(new UserDto(user.getUserId(), user.getEmail(), user.getUserName()));
+        return ResponseEntity.ok(user.getEmail());
     }
 
 

@@ -5,24 +5,25 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "person_profile")
+@Table(name = "user_profile")
 public class UserProfile {
     @Id
-    @Column(name = "person_id")
-    private Integer userId;
-    @Column(name = "sex")
-    private boolean sex;
+    @Column(name = "user_id")
+    private UUID userId;
+    @Column(name = "gender")
+    private boolean gender;
     @Column(name = "about_me")
     private String aboutMe;
     @Column(name = "registration_date_time")
     private LocalDateTime registrationDateTime = LocalDateTime.now();
-    @Column(name = "person_pic")
-    private Integer userPic;
-    @Column(name = "person_cover")
-    private Integer userCover;
+    @Column(name = "user_pic")
+    private UUID userPic;
+    @Column(name = "user_cover")
+    private UUID userCover;
     @Column(name = "number_bank_card")
     private String numberBankCard;
     @Column(name = "birthday")
@@ -32,6 +33,6 @@ public class UserProfile {
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id")
+    @JoinColumn(name = "user_id")
     private User user;
 }

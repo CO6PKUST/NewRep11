@@ -8,15 +8,17 @@ import jakarta.persistence.GenerationType;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.UUID;
+
 @Data
 @Entity
-@Table(name = "person_role")
+@Table(name = "user_role")
 @Slf4j
 public class UserRole {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "role_id")
-    private Integer roleId;
+    private UUID roleId;
     @Column(name = "role_name")
     private String roleName;
 }

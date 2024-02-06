@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService{
 
     private final UserRepository userRepository;
     private final UserRoleService userRoleService;
@@ -27,17 +27,17 @@ public class UserService implements UserDetailsService {
 
 
 
-    public Optional<User> findByUserName(String userName){
-        log.info("пользователь найден findByUserName");
-        return userRepository.findByUserName(userName);
-    }
+//    public Optional<User> findByUserName(String userName){
+//        log.info("пользователь найден findByUserName");
+//        return userRepository.findByUserName(userName);
+//    }
     public Optional<User> findByEmail (String Email){
-        log.info("пользователь найден  findByEmail");
+        log.info("поиск findByEmail");
         return userRepository.findByEmail(Email);
     }
     private org.springframework.security.core.userdetails.User loadUser (User user){
         return new org.springframework.security.core.userdetails.User(
-                user.getUserName(),
+                user.getEmail(),
                 user.getPassword(),
                 user.getUserRoles().stream()
                         .map(userRole -> new SimpleGrantedAuthority(userRole.getRoleName()))
@@ -47,17 +47,17 @@ public class UserService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        log.info("загрузка пользователя по его имени loadUserByUsername");
-        User user = findByUserName(userName).orElseThrow(()-> new UsernameNotFoundException(
-                String.format("пользователь '%s' не найден", userName)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        log.info("загрузка пользователя по его почте");
+        User user = findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(
+                String.format("пользователь '%s' не найден", email)
 
         ));
         return loadUser(user);
     }
     @Transactional
     public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException{
-        log.info("загрузка пользователя по его имени loadUserByUsername");
+        log.info("загрузка пользователя по его имени loadUserByEmail");
         User user = findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(
                 String.format("пользователь '%s' не найден", email)
 
@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
     public User createNewUser(UserRegistrationDto userRegistrationDto){
         User user = new User();
         user.setFirstName(userRegistrationDto.getFirstName());
-        user.setSecondName(userRegistrationDto.getSecondName());
+        user.setLastName(userRegistrationDto.getLastName());
         user.setEmail(userRegistrationDto.getEmail());
         user.setPassword(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()));
         user.setUserRoles(new ArrayList<>(List.of(userRoleService.getUserRole())));

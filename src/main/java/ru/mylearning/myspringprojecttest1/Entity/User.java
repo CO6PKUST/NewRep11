@@ -8,29 +8,27 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "person")
+@Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "person_id")
-    private Integer userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "user_id")
+    private UUID userId;
     @Column(name = "first_name")
     private String firstName;
-    @Column(name = "second_name")
-    private String secondName;
+    @Column(name = "last_name")
+    private String lastName;
     @Column(name = "email")
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "nickname")
-    private String userName = "user" + UUID.randomUUID();
-
     @Column(name = "enabled")
     private boolean enabled;
+
     @ManyToMany
     @JoinTable(
-            name = "person_has_role",
-            joinColumns = @JoinColumn(name = "person_id"),
+            name = "user_has_role",
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Collection<UserRole> userRoles;
