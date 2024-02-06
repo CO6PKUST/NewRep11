@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -13,16 +14,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id")
     private Integer userId;
-    @Column(name = "firstname")
+    @Column(name = "first_name")
     private String firstName;
-    @Column(name = "secondname")
+    @Column(name = "second_name")
     private String secondName;
     @Column(name = "email")
     private String email;
-    @Column(name = "hashpassword")
-    private String hashPassword;
+    @Column(name = "password")
+    private String password;
     @Column(name = "nickname")
-    private String userName;
+    private String userName = "user" + UUID.randomUUID();
+
     @Column(name = "enabled")
     private boolean enabled;
     @ManyToMany
@@ -32,6 +34,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Collection<UserRole> userRoles;
-
-
 }

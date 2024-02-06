@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Data
 @Entity
-@Table(name = "personrole")
+@Table(name = "person_role")
 @Slf4j
 public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
     private Integer roleId;
-    @Column(name = "rolename")
+    @Column(name = "role_name")
     private String roleName;
 }
