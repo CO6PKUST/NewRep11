@@ -452,7 +452,7 @@ COPY public.messages (from_person_id, to_person_id, message_time, description, m
 
 COPY public.person (person_id, first_name, second_name, email, password, nickname, enabled) FROM stdin;
 2	Petr	Petrov	petr@mail.ru	$2b$12$HB.rQsZuubVcamZNxI5cbOgUN6eIlGzowdGd.cjzexlCpMXNO/q5K	admin	t
-1	Ivan	Ivanov	ivan@mail.ru	$2b$12$HB.rQsZuubVcamZNxI5cbO.5xOLGK6jfH/hoD1SbeQbxaLLrZbMye	user	t
+1	Ivan	Ivanov	ivan@mail.ru	$2b$12$HB.rQsZuubVcamZNxI5cbO.5xOLGK6jfH/hoD1SbeQbxaLLrZbMye	userDatabaseModel	t
 3	\N	\N	bob@mail.ru	$2a$10$PF0a5vYib7eh1lXQh5Ll5e.Mf6L8QKOHAik40hGoHZOXEfc2N/CqS	bob	t
 4	\N	\N	bob@mail.ru	$2a$10$vqXuUUYNwyfPY5I55qBXj.JCGRBfY7bggfa6WJ1wjvHZ.rzLCpojC	mary	t
 5	\N	\N	newmail@mail.ru	$2a$10$mP4x0J/qG8LNxxX4YF05DejyA0sE7jn2Ai9RVyfAgFg5O2Z/HN7Ci	usernull	t

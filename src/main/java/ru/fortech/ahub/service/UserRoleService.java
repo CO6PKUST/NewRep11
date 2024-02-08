@@ -1,7 +1,7 @@
 package ru.fortech.ahub.service;
 
-import ru.fortech.ahub.entity.UserRoleEntity;
+import ru.fortech.ahub.entity.UserRole;
 
 public interface UserRoleService {
-    UserRoleEntity getUserRole();
+    UserRole getUserRole();
 }

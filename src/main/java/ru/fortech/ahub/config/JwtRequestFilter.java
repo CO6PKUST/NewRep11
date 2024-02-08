@@ -30,18 +30,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
             try {
                 username = jwtTokenUtils.getUserName(jwt);
 
-            } catch (ExpiredJwtException e){
-                log.debug("время жизни токена вышло");
-            } catch (SecurityException e){
-                log.debug("подпись неправильная");
+            } catch (ExpiredJwtException e) {
+                log.debug("token lifetime has expired");
+            } catch (SecurityException e) {
+                log.debug("signature is incorrect");
             }
         }
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                     username,
                     null,

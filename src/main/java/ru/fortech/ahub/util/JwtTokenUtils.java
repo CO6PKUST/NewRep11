@@ -30,8 +30,8 @@ public class JwtTokenUtils {
     }
 
 
-    public String generateToken(UserDetails userDetails){
-        log.info("генерация токена generateToken");
+    public String generateToken(UserDetails userDetails) {
+        log.info("generateToken");
         Map<String, Object> claims = new HashMap<>();
         List<String> rolesList = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -50,17 +50,16 @@ public class JwtTokenUtils {
     }
 
 
-
-    public String getUserName(String token){
+    public String getUserName(String token) {
         return getAllClaimsFromToken(token).getSubject();
     }
 
-    public List<String> getRoles(String token){
+    public List<String> getRoles(String token) {
         return getAllClaimsFromToken(token).get("roles", List.class);
     }
 
-    private Claims getAllClaimsFromToken(String token){
-        log.info("получение информации из токена getAllClaimsFromToken");
+    private Claims getAllClaimsFromToken(String token) {
+        log.info("get info getAllClaimsFromToken");
         return (Claims) Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()

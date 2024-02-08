@@ -8,7 +8,7 @@ import ru.fortech.ahub.service.dto.OauthCodeDto;
 import ru.fortech.ahub.service.dto.UserRegistrationDto;
 import ru.fortech.ahub.service.AuthService;
 import ru.fortech.ahub.service.dto.JwtRequest;
-import ru.fortech.ahub.service.AuthServiceOauth;
+import ru.fortech.ahub.service.OauthService;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,19 +16,23 @@ import ru.fortech.ahub.service.AuthServiceOauth;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-    private final AuthServiceOauth authServiceOauth;
+    private final OauthService oauthService;
 
     @PostMapping("/")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest){
+    public ResponseEntity<?> loginUsernamePassword(@RequestBody JwtRequest authRequest) {
+        log.info("calling the loginUsernamePassword controller");
         return authService.getAuthToken(authRequest);
     }
+
     @PostMapping("/reg")
-    public ResponseEntity<?> createNewUser(@RequestBody UserRegistrationDto userRegistrationDto){
+    public ResponseEntity<?> registrationNewUser(@RequestBody UserRegistrationDto userRegistrationDto) {
+        log.info("calling the registrationNewUser controller");
         return authService.createNewUser(userRegistrationDto);
     }
+
     @PostMapping("/oauth2")
-    public ResponseEntity<?> loginOauth(@RequestBody OauthCodeDto oauthCodeDto){
-        log.info("calling the loginOauth");
-        return authServiceOauth.getAuthToken(oauthCodeDto);
+    public ResponseEntity<?> loginOauth(@RequestBody OauthCodeDto oauthCodeDto) {
+        log.info("calling the loginOauth controller");
+        return oauthService.getAuthToken(oauthCodeDto);
     }
 }

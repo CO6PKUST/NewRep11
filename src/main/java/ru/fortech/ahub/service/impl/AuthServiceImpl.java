@@ -10,8 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.fortech.ahub.entity.User;
 import ru.fortech.ahub.repository.UserRepository;
-import ru.fortech.ahub.entity.UserEntity;
 import ru.fortech.ahub.service.dto.JwtRequest;
 import ru.fortech.ahub.service.dto.UserRegistrationDto;
 import ru.fortech.ahub.exception.AppError;
@@ -29,35 +29,29 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
 
-    private String createAuthTokenByEmail(String email){
+    private String createAuthTokenByEmail(String email) {
         UserDetails userDetails = userService.loadUserByEmail(email);
         return jwtTokenUtils.generateToken(userDetails);
     }
 
     @Override
-    public ResponseEntity<?> getAuthToken(@RequestBody JwtRequest authRequest){
+    public ResponseEntity<?> getAuthToken(@RequestBody JwtRequest authRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
-        } catch (BadCredentialsException e){
-            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "неправильный логин или пароль"), HttpStatus.UNAUTHORIZED);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect login or password"), HttpStatus.UNAUTHORIZED);
         }
-
         return ResponseEntity.ok(createAuthTokenByEmail(authRequest.getEmail()));
-
     }
 
     @Override
-    public ResponseEntity<?> createNewUser(@RequestBody UserRegistrationDto userRegistrationDto){
-        if(userRepository.findByEmail(userRegistrationDto.getEmail()).isPresent()){
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "пользователь уже зарегистрирован"), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> createNewUser(@RequestBody UserRegistrationDto userRegistrationDto) {
+        if (userRepository.findByEmail(userRegistrationDto.getEmail()).isPresent()) {
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User is already registered"), HttpStatus.BAD_REQUEST);
         }
-
-        UserEntity userEntity = userService.createNewUser(userRegistrationDto);
-        return ResponseEntity.ok(userEntity.getEmail());
+        User user = userService.createNewUser(userRegistrationDto);
+        return ResponseEntity.ok(user.getEmail());
     }
-
-
-
 
 
 }

@@ -1,7 +1,7 @@
 package ru.fortech.ahub.service;
 
-import ru.fortech.ahub.entity.UserEntity;
+import ru.fortech.ahub.entity.User;
 
 public interface UserProfileService {
-    void createUserProfileFromNewUser (UserEntity userEntity);
+    void createUserProfileFromNewUser(User user);
 }

@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "user_profile")
-public class UserProfile {
+public class UserProfileDatabaseModel {
     @Id
     @Column(name = "user_id")
     private UUID userId;
@@ -34,5 +34,5 @@ public class UserProfile {
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserDatabaseModel userDatabaseModel;
 }

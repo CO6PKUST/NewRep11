@@ -1,11 +1,15 @@
 package ru.fortech.ahub.service.mapper;
 
 import org.mapstruct.Mapper;
-import ru.fortech.ahub.repository.model.User;
-import ru.fortech.ahub.entity.UserEntity;
+import org.mapstruct.Mapping;
+import ru.fortech.ahub.repository.model.UserDatabaseModel;
+import ru.fortech.ahub.entity.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    User toUser(UserEntity userEntity);
-    UserEntity toUserEntity(User user);
+    @Mapping(source = "userRoles", target = "userRoleDatabaseModels")
+    UserDatabaseModel toUserDatabaseModel(User user);
+
+    @Mapping(source = "userRoleDatabaseModels", target = "userRoles")
+    User toUserEntity(UserDatabaseModel userDatabaseModel);
 }

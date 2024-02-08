@@ -5,8 +5,9 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 @Data
-public class UserProfileEntity {
+public class UserProfile {
 
     private UUID userId;
     private boolean gender;
@@ -17,5 +18,5 @@ public class UserProfileEntity {
     private String numberBankCard;
     private LocalDate birthday;
     private LocalDateTime lastOnline = LocalDateTime.now();
-    private UserEntity userEntity;
+    //private User user;
 }

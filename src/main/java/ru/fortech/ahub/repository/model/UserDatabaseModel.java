@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class UserDatabaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
@@ -31,5 +31,5 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Collection<UserRole> userRoles;
+    private Collection<UserRoleDatabaseModel> userRoleDatabaseModels;
 }
