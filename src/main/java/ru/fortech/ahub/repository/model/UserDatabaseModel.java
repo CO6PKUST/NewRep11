@@ -11,7 +11,6 @@ import java.util.UUID;
 @Table(name = "users")
 public class UserDatabaseModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
     private UUID userId;
     @Column(name = "first_name")

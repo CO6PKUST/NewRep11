@@ -23,4 +23,5 @@ public class UserProfileServiceImpl implements UserProfileService {
         userProfileRepository.save(userProfileMapper.toUserProfileDatabaseModel(userProfile));
     }
 
+
 }

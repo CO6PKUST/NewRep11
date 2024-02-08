@@ -18,5 +18,5 @@ public class UserProfile {
     private String numberBankCard;
     private LocalDate birthday;
     private LocalDateTime lastOnline = LocalDateTime.now();
-    //private User user;
+    private User user;
 }

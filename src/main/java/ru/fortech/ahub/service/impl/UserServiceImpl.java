@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createNewUser(UserRegistrationDto userRegistrationDto) {
         User user = new User();
+        user.setUserId(UUID.randomUUID());
         user.setFirstName(userRegistrationDto.getFirstName());
         user.setLastName(userRegistrationDto.getLastName());
         user.setEmail(userRegistrationDto.getEmail());
