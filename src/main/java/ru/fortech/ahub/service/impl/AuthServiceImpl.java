@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect login or password"), HttpStatus.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(createAuthTokenByEmail(authRequest.getLogin()));
+        return ResponseEntity.ok(createJwtResponse(authRequest.getLogin()));
     }
 
     @Override
@@ -58,25 +58,25 @@ public class AuthServiceImpl implements AuthService {
 
         return ResponseEntity.ok(createJwtResponse(user.getEmail()));
     }
-
-    public JwtResponseTwoToken createJwtResponse(String email) {
+    private JwtResponseTwoToken createJwtResponse(String email) {
+        log.info("call method createJwtResponse from AuthServiceImpl");
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(email);
         return JwtResponseTwoToken.builder()
                 .accessToken(createAuthTokenByEmail(email))
                 .refreshToken(refreshToken.getRefreshToken())
                 .build();
     }
-    @Transactional
-    public JwtResponse refreshToken(RefreshRequest refreshRequest){
+    @Override
+    public ResponseEntity<?> refreshToken(RefreshRequest refreshRequest){
         log.info("call method refreshToken from AuthServiceImpl");
-        return refreshTokenRepository.findByRefreshToken(refreshRequest.getRefreshToken())
+        return ResponseEntity.ok(refreshTokenRepository.findByRefreshToken(refreshRequest.getRefreshToken())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     JwtResponse jwtResponse = new JwtResponse();
                     jwtResponse.setAccessToken(createAuthTokenByEmail(user.getEmail()));
                     return jwtResponse;
-                }).orElseThrow();
+                }).orElseThrow());
 
     }
 

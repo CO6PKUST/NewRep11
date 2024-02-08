@@ -9,8 +9,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
+import ru.fortech.ahub.entity.RefreshToken;
 import ru.fortech.ahub.repository.UserRepository;
 import ru.fortech.ahub.exception.AppError;
+import ru.fortech.ahub.service.AuthService;
+import ru.fortech.ahub.service.RefreshTokenService;
+import ru.fortech.ahub.service.dto.JwtResponseTwoToken;
 import ru.fortech.ahub.service.dto.OauthCodeDto;
 import ru.fortech.ahub.service.dto.UserGoogleResponseDto;
 import ru.fortech.ahub.service.OauthService;
@@ -30,6 +34,7 @@ public class OauthServiceImpl implements OauthService {
 
     private final UserOauthService userOauthService;
     private final UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public ResponseEntity<?> getAuthToken(@RequestBody OauthCodeDto oauthCodeDto) {
@@ -52,9 +57,9 @@ public class OauthServiceImpl implements OauthService {
             String email = jsonObject.getString("email");
 
             if (userRepository.findByEmail(email).isPresent()) {
-                return ResponseEntity.ok(userOauthService.createAuthTokenByEmail(email));
+                return ResponseEntity.ok(createJwtResponse(email));
             }
-            return ResponseEntity.ok(userOauthService.createAuthTokenByEmail(userOauthService.createNewUser(jsonObject).getEmail()));
+            return ResponseEntity.ok(createJwtResponse(userOauthService.createNewUser(jsonObject).getEmail()));
         }
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "response error"), HttpStatus.BAD_REQUEST);
     }
@@ -75,6 +80,15 @@ public class OauthServiceImpl implements OauthService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
 
         return restTemplate.postForEntity(RESOURCE_URL_GOOGLE + "/token", request, UserGoogleResponseDto.class);
+    }
+
+    private JwtResponseTwoToken createJwtResponse(String email) {
+        log.info("call method createJwtResponse from OauthServiceImpl");
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(email);
+        return JwtResponseTwoToken.builder()
+                .accessToken(userOauthService.createAuthTokenByEmail(email))
+                .refreshToken(refreshToken.getRefreshToken())
+                .build();
     }
 
 

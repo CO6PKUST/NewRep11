@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.fortech.ahub.service.RefreshTokenService;
 import ru.fortech.ahub.service.dto.*;
 import ru.fortech.ahub.service.AuthService;
 import ru.fortech.ahub.service.OauthService;
@@ -16,7 +15,6 @@ import ru.fortech.ahub.service.OauthService;
 public class AuthController {
     private final AuthService authService;
     private final OauthService oauthService;
-    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("")
     public ResponseEntity<?> loginUsernamePassword(@RequestBody JwtRequest authRequest) {
@@ -37,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/refreshToken")
-    private JwtResponse refreshToken(@RequestBody RefreshRequest refreshRequest){
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshRequest refreshRequest){
         log.info("calling the refreshToken controller");
         return authService.refreshToken(refreshRequest);
 

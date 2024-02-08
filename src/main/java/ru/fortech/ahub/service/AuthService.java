@@ -7,5 +7,5 @@ public interface AuthService {
     ResponseEntity<?> getAuthToken(JwtRequest authRequest);
 
     ResponseEntity<?> createNewUser(UserRegistrationDto userRegistrationDto);
-    JwtResponse refreshToken(RefreshRequest refreshRequest);
+    ResponseEntity<?> refreshToken(RefreshRequest refreshRequest);
 }
