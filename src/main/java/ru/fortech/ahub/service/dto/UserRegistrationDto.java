@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserRegistrationDto {
 
-    private String email;
+    private String login;
     private String password;
     private String firstName;
     private String lastName;

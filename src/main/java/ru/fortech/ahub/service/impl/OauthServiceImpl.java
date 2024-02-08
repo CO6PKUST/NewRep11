@@ -33,10 +33,13 @@ public class OauthServiceImpl implements OauthService {
 
     @Override
     public ResponseEntity<?> getAuthToken(@RequestBody OauthCodeDto oauthCodeDto) {
-        return ResponseEntity.ok(getTokenFromCode(java.net.URLDecoder.decode(oauthCodeDto.getCode(), StandardCharsets.UTF_8)));
+        log.info("its getAuthToken OauthServiceImpl");
+//        return ResponseEntity.ok(getTokenFromCode(java.net.URLDecoder.decode(oauthCodeDto.getCode(), StandardCharsets.UTF_8)));
+        return ResponseEntity.ok(getTokenFromCode(oauthCodeDto.getCode()));
     }
 
     private ResponseEntity<?> getTokenFromCode(String code) {
+        log.info("its getTokenFromCode OauthServiceImpl");
 
         ResponseEntity<UserGoogleResponseDto> responseEntity = getResponseToken(code);
 
@@ -56,6 +59,7 @@ public class OauthServiceImpl implements OauthService {
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "response error"), HttpStatus.BAD_REQUEST);
     }
     private ResponseEntity<UserGoogleResponseDto> getResponseToken(String code){
+        log.info("its getResponseToken OauthServiceImpl");
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();

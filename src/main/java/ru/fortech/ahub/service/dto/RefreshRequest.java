@@ -5,7 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
-public class JwtResponse {
-    private String accessToken;
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class RefreshRequest {
+    private String refreshToken;
 }

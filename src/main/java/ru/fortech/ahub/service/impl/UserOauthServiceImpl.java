@@ -32,7 +32,7 @@ public class UserOauthServiceImpl implements UserOauthService {
     public User createNewUser(JSONObject jsonObject) {
         UserRegistrationDto userRegistrationDto = new UserRegistrationDto();
         String password = String.valueOf(UUID.randomUUID());
-        userRegistrationDto.setEmail(jsonObject.getString("email"));
+        userRegistrationDto.setLogin(jsonObject.getString("email"));
         userRegistrationDto.setFirstName(jsonObject.getString("given_name"));
         userRegistrationDto.setLastName(jsonObject.getString("family_name"));
         userRegistrationDto.setPassword(password);

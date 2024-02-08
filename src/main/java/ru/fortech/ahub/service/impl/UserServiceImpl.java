@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import ru.fortech.ahub.service.UserProfileService;
 import ru.fortech.ahub.service.UserRoleService;
 import ru.fortech.ahub.service.UserService;
-import ru.fortech.ahub.service.mapper.UserMapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,7 +27,6 @@ public class UserServiceImpl implements UserService {
     private final UserRoleService userRoleService;
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     private final UserProfileService userProfileService;
-    private final UserMapper userMapper;
 
 
     private org.springframework.security.core.userdetails.User loadUser(User user) {
@@ -46,8 +44,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("call method loadUserByUsername from UserServiceImpl");
-        User user = userMapper.toUserEntity(userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("user '%s' is not found", email))));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("user '%s' is not found", email)));
         return loadUser(user);
     }
 
@@ -55,8 +53,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
         log.info("call method loadUserByEmail from UserServiceImpl");
-        User user = userMapper.toUserEntity(userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("user '%s' is not found", email))));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("user '%s' is not found", email)));
         return loadUser(user);
     }
 
@@ -66,12 +64,12 @@ public class UserServiceImpl implements UserService {
         user.setUserId(UUID.randomUUID());
         user.setFirstName(userRegistrationDto.getFirstName());
         user.setLastName(userRegistrationDto.getLastName());
-        user.setEmail(userRegistrationDto.getEmail());
+        user.setEmail(userRegistrationDto.getLogin());
         user.setPassword(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()));
         user.setUserRoles(new ArrayList<>(List.of(userRoleService.getUserRole())));
         user.setEnabled(true);
         userProfileService.createUserProfileFromNewUser(user);
-        return userMapper.toUserEntity(userRepository.save(userMapper.toUserDatabaseModel(user)));
+        return userRepository.save(user);
     }
 
 }
