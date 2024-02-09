@@ -28,7 +28,7 @@ import java.util.Base64;
 public class OauthServiceImpl implements OauthService {
     private final static String CLIENT_ID = "888245132190-ur9ifn150cl4ralmnank5on5riaqdv28.apps.googleusercontent.com";
     private final static String CLIENT_SECRET = "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";
-    private final static String REDIRECT_URI = "http://localhost:8080/oauth2/callback";
+    private final static String REDIRECT_URI = "http://localhost:3000";
     private final static String RESOURCE_URL_GOOGLE = "https://oauth2.googleapis.com";
 
     private final UserOauthService userOauthService;
