@@ -52,13 +52,18 @@ public class OauthServiceImpl implements OauthService {
             String idToken = responseEntity.getBody().getId_token();
             String[] chunks = idToken.split("\\.");
             String payloadStr = new String(Base64.getUrlDecoder().decode(chunks[1]));
+            log.info("payloadStr is complete");
+            log.info(payloadStr + "-its payload");
 
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 UserRegistrationDtoFromOauth userRegistrationDtoFromOauth = objectMapper.readValue(payloadStr, UserRegistrationDtoFromOauth.class);
 
+                log.info("objectMapper.readValue is complete");
+
 
             String email = userRegistrationDtoFromOauth.getEmail();
+                log.info("String email = userRegistrationDtoFromOauth.getEmail() is complete");
 
             if (userRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.ok(createJwtResponse(email));
