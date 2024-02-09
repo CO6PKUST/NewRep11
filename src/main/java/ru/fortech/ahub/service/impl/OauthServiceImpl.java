@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 import ru.fortech.ahub.entity.RefreshToken;
 import ru.fortech.ahub.repository.UserRepository;
 import ru.fortech.ahub.exception.AppError;
-import ru.fortech.ahub.service.AuthService;
 import ru.fortech.ahub.service.RefreshTokenService;
 import ru.fortech.ahub.service.dto.JwtResponseTwoToken;
 import ru.fortech.ahub.service.dto.OauthCodeDto;

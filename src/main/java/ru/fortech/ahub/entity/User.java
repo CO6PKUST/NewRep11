@@ -23,6 +23,8 @@ public class User {
     private String password;
     @Column(name = "enabled")
     private boolean enabled;
+    @Column(name = "phone_number")
+    private String phone;
 
     @ManyToMany
     @JoinTable(

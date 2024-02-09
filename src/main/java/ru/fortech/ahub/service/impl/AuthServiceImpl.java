@@ -9,13 +9,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.fortech.ahub.entity.RefreshToken;
 import ru.fortech.ahub.entity.User;
 import ru.fortech.ahub.repository.RefreshTokenRepository;
-import ru.fortech.ahub.repository.UserRepository;
 import ru.fortech.ahub.service.RefreshTokenService;
+import ru.fortech.ahub.service.UserRepositoryService;
 import ru.fortech.ahub.service.dto.*;
 import ru.fortech.ahub.exception.AppError;
 import ru.fortech.ahub.service.AuthService;
@@ -27,15 +26,15 @@ import ru.fortech.ahub.util.JwtTokenUtils;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
     private final UserService userService;
-    private final UserRepository userRepository;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepositoryService userRepositoryService;
 
 
-    private String createAuthTokenByEmail(String email) {
-        UserDetails userDetails = userService.loadUserByEmail(email);
+    private String createAuthTokenByLogin(String login) {
+        UserDetails userDetails = userService.loadUserByUsername(login);
         return jwtTokenUtils.generateToken(userDetails);
     }
 
@@ -51,18 +50,28 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> createNewUser(@RequestBody UserRegistrationDto userRegistrationDto) {
-        if (userRepository.findByEmail(userRegistrationDto.getLogin()).isPresent()) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User is already registered"), HttpStatus.BAD_REQUEST);
-        }
-        User user = userService.createNewUser(userRegistrationDto);
+        if (userRegistrationDto.getLogin().matches("^\\+7\\d{10}$") ||
+                userRegistrationDto.getLogin().matches("^8\\d{10}$") ||
+                userRegistrationDto.getLogin().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")){
 
-        return ResponseEntity.ok(createJwtResponse(user.getEmail()));
+            if (userRepositoryService.findByLogin(userRegistrationDto.getLogin()).isPresent()) {
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User is already registered"), HttpStatus.BAD_REQUEST);
+            }
+            userService.createNewUser(userRegistrationDto);
+
+            return ResponseEntity.ok(createJwtResponse(userRegistrationDto.getLogin()));
+
+
+        }
+        else
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "login validation error"), HttpStatus.BAD_REQUEST);
+
     }
-    private JwtResponseTwoToken createJwtResponse(String email) {
+    private JwtResponseTwoToken createJwtResponse(String login) {
         log.info("call method createJwtResponse from AuthServiceImpl");
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(email);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(login);
         return JwtResponseTwoToken.builder()
-                .accessToken(createAuthTokenByEmail(email))
+                .accessToken(createAuthTokenByLogin(login))
                 .refreshToken(refreshToken.getRefreshToken())
                 .build();
     }
@@ -74,12 +83,15 @@ public class AuthServiceImpl implements AuthService {
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     JwtResponse jwtResponse = new JwtResponse();
-                    jwtResponse.setAccessToken(createAuthTokenByEmail(user.getEmail()));
+                    if(user.getEmail().isEmpty()){
+                        jwtResponse.setAccessToken(createAuthTokenByLogin(user.getPhone()));
+                    }else {
+                        jwtResponse.setAccessToken(createAuthTokenByLogin(user.getEmail()));
+                    }
                     return jwtResponse;
                 }).orElseThrow());
 
     }
-
 
 
 }

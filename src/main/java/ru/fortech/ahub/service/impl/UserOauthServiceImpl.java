@@ -23,7 +23,7 @@ public class UserOauthServiceImpl implements UserOauthService {
 
     @Override
     public String createAuthTokenByEmail(String email) {
-        UserDetails userDetails = userService.loadUserByEmail(email);
+        UserDetails userDetails = userService.loadUserByUsername(email);
         return jwtTokenUtils.generateToken(userDetails);
     }
 

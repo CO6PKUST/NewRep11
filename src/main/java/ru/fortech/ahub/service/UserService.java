@@ -8,6 +8,5 @@ import ru.fortech.ahub.service.dto.UserRegistrationDto;
 
 public interface UserService extends UserDetailsService {
     UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
-    UserDetails loadUserByEmail(String email) throws UsernameNotFoundException;
     User createNewUser(UserRegistrationDto userRegistrationDto);
 }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.fortech.ahub.config.PasswordEncoderConfiguration;
 import ru.fortech.ahub.entity.User;
 import ru.fortech.ahub.repository.UserRepository;
+import ru.fortech.ahub.service.UserRepositoryService;
 import ru.fortech.ahub.service.dto.UserRegistrationDto;
 import org.springframework.stereotype.Service;
 import ru.fortech.ahub.service.UserProfileService;
@@ -27,49 +28,61 @@ public class UserServiceImpl implements UserService {
     private final UserRoleService userRoleService;
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     private final UserProfileService userProfileService;
+    private final UserRepositoryService userRepositoryService;
 
 
     private org.springframework.security.core.userdetails.User loadUser(User user) {
         log.info("call method loadUser from UserServiceImpl");
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                user.getUserRoles().stream()
-                        .map(userRole -> new SimpleGrantedAuthority(userRole.getRoleName()))
-                        .collect(Collectors.toList())
-        );
+        Optional<String> email = Optional.ofNullable(user.getEmail());
+        if (email.isEmpty()){
+            return new org.springframework.security.core.userdetails.User(
+                    user.getPhone(),
+                    user.getPassword(),
+                    user.getUserRoles().stream()
+                            .map(userRole -> new SimpleGrantedAuthority(userRole.getRoleName()))
+                            .collect(Collectors.toList())
+            );
+        }else {
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getUserRoles().stream()
+                            .map(userRole -> new SimpleGrantedAuthority(userRole.getRoleName()))
+                            .collect(Collectors.toList())
+            );
+        }
     }
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("call method loadUserByUsername from UserServiceImpl");
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("user '%s' is not found", email)));
-        return loadUser(user);
-    }
-
-    @Override
-    @Transactional
-    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
-        log.info("call method loadUserByEmail from UserServiceImpl");
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("user '%s' is not found", email)));
+        User user = userRepositoryService.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("user '%s' is not found", username)));
         return loadUser(user);
     }
 
     @Override
     public User createNewUser(UserRegistrationDto userRegistrationDto) {
+        log.info("call method createNewUser from UserServiceImpl");
         User user = new User();
         user.setUserId(UUID.randomUUID());
         user.setFirstName(userRegistrationDto.getFirstName());
         user.setLastName(userRegistrationDto.getLastName());
-        user.setEmail(userRegistrationDto.getLogin());
         user.setPassword(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()));
         user.setUserRoles(new ArrayList<>(List.of(userRoleService.getUserRole())));
         user.setEnabled(true);
         userProfileService.createUserProfileFromNewUser(user);
-        return userRepository.save(user);
+        return userRepository.save(checkLoginType(userRegistrationDto, user));
+    }
+    private User checkLoginType(UserRegistrationDto userRegistrationDto, User user){
+        log.info("call method checkLoginType from UserServiceImpl");
+        if (userRegistrationDto.getLogin().matches("^\\+7\\d{10}$") || userRegistrationDto.getLogin().matches("^8\\d{10}$")) {
+            user.setPhone(userRegistrationDto.getLogin());
+            return user;
+        }
+        user.setEmail(userRegistrationDto.getLogin());
+        return user;
     }
 
 }

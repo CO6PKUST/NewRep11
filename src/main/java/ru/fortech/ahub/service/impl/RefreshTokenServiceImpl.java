@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.fortech.ahub.entity.RefreshToken;
 import ru.fortech.ahub.entity.User;
 import ru.fortech.ahub.repository.RefreshTokenRepository;
-import ru.fortech.ahub.repository.UserRepository;
 import ru.fortech.ahub.service.RefreshTokenService;
+import ru.fortech.ahub.service.UserRepositoryService;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -19,13 +19,13 @@ import java.util.UUID;
 @Slf4j
 public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
+    private final UserRepositoryService userRepositoryService;
     @Override
     @Transactional
-    public RefreshToken createRefreshToken(String username){
+    public RefreshToken createRefreshToken(String login){
         log.info("call method createRefreshToken from RefreshTokenServiceImpl");
 
-        User user = userRepository.findByEmail(username).orElseThrow();
+        User user = userRepositoryService.findByLogin(login).orElseThrow();
 
         Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByUser(user);
         if (refreshTokenOpt.isPresent()){
@@ -36,7 +36,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
                 .refreshToken(String.valueOf(UUID.randomUUID()))
-                .expDate(Instant.now().plusSeconds(600))
+                .expDate(Instant.now().plusSeconds(6000))
                 .build();
         return refreshTokenRepository.save(refreshToken);
     }
