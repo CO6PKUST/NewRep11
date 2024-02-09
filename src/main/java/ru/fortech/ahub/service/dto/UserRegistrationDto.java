@@ -1,10 +1,11 @@
 package ru.fortech.ahub.service.dto;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Data
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserRegistrationDto {
 
     private String login;

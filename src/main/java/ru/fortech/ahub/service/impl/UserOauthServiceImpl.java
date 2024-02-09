@@ -9,6 +9,7 @@ import ru.fortech.ahub.entity.User;
 import ru.fortech.ahub.service.dto.UserRegistrationDto;
 import ru.fortech.ahub.service.UserOauthService;
 import ru.fortech.ahub.service.UserService;
+import ru.fortech.ahub.service.dto.UserRegistrationDtoFromOauth;
 import ru.fortech.ahub.util.JwtTokenUtils;
 
 import java.util.UUID;
@@ -29,13 +30,12 @@ public class UserOauthServiceImpl implements UserOauthService {
 
 
     @Override
-    public User createNewUser(JSONObject jsonObject) {
-        UserRegistrationDto userRegistrationDto = new UserRegistrationDto();
-        String password = String.valueOf(UUID.randomUUID());
-        userRegistrationDto.setLogin(jsonObject.getString("email"));
-        userRegistrationDto.setFirstName(jsonObject.getString("given_name"));
-        userRegistrationDto.setLastName(jsonObject.getString("family_name"));
-        userRegistrationDto.setPassword(password);
-        return userService.createNewUser(userRegistrationDto);
+    public User createNewUser(UserRegistrationDtoFromOauth userRegistrationDtoFromOauth) {
+        return userService.createNewUser(UserRegistrationDto.builder()
+                .password(String.valueOf(UUID.randomUUID()))
+                .login(userRegistrationDtoFromOauth.getEmail())
+                .firstName(userRegistrationDtoFromOauth.getGiven_name())
+                .lastName(userRegistrationDtoFromOauth.getFamily_name())
+                .build());
     }
 }

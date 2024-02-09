@@ -1,8 +1,9 @@
 package ru.fortech.ahub.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -13,9 +14,7 @@ import ru.fortech.ahub.entity.RefreshToken;
 import ru.fortech.ahub.repository.UserRepository;
 import ru.fortech.ahub.exception.AppError;
 import ru.fortech.ahub.service.RefreshTokenService;
-import ru.fortech.ahub.service.dto.JwtResponseTwoToken;
-import ru.fortech.ahub.service.dto.OauthCodeDto;
-import ru.fortech.ahub.service.dto.UserGoogleResponseDto;
+import ru.fortech.ahub.service.dto.*;
 import ru.fortech.ahub.service.OauthService;
 import ru.fortech.ahub.service.UserOauthService;
 
@@ -46,19 +45,29 @@ public class OauthServiceImpl implements OauthService {
         log.info("its getTokenFromCode OauthServiceImpl");
 
         ResponseEntity<UserGoogleResponseDto> responseEntity = getResponseToken(code);
+        log.info("getResponseToken is complete");
+
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             String idToken = responseEntity.getBody().getId_token();
             String[] chunks = idToken.split("\\.");
             String payloadStr = new String(Base64.getUrlDecoder().decode(chunks[1]));
 
-            JSONObject jsonObject = new JSONObject(payloadStr);
-            String email = jsonObject.getString("email");
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                UserRegistrationDtoFromOauth userRegistrationDtoFromOauth = objectMapper.readValue(payloadStr, UserRegistrationDtoFromOauth.class);
+
+
+            String email = userRegistrationDtoFromOauth.getEmail();
 
             if (userRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.ok(createJwtResponse(email));
             }
-            return ResponseEntity.ok(createJwtResponse(userOauthService.createNewUser(jsonObject).getEmail()));
+            return ResponseEntity.ok(createJwtResponse(userOauthService.createNewUser(userRegistrationDtoFromOauth).getEmail()));
+
+            } catch (JsonProcessingException e) {
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "response error"), HttpStatus.BAD_REQUEST);
+            }
         }
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "response error"), HttpStatus.BAD_REQUEST);
     }
