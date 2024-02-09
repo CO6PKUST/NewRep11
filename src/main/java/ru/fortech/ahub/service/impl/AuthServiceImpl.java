@@ -40,16 +40,23 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> getAuthToken(@RequestBody JwtRequest authRequest) {
+        if (userRepositoryService.findByLogin(authRequest.getLogin()).isEmpty()){
+            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect login"), HttpStatus.UNAUTHORIZED);
+        }
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect login or password"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Incorrect password"), HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(createJwtResponse(authRequest.getLogin()));
     }
 
     @Override
     public ResponseEntity<?> createNewUser(@RequestBody UserRegistrationDto userRegistrationDto) {
+        if (!userRegistrationDto.getPassword().matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")){
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "password validation error"), HttpStatus.BAD_REQUEST);
+        }
+
         if (userRegistrationDto.getLogin().matches("^\\+7\\d{10}$") ||
                 userRegistrationDto.getLogin().matches("^8\\d{10}$") ||
                 userRegistrationDto.getLogin().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")){
@@ -58,10 +65,7 @@ public class AuthServiceImpl implements AuthService {
                 return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User is already registered"), HttpStatus.BAD_REQUEST);
             }
             userService.createNewUser(userRegistrationDto);
-
             return ResponseEntity.ok(createJwtResponse(userRegistrationDto.getLogin()));
-
-
         }
         else
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "login validation error"), HttpStatus.BAD_REQUEST);
