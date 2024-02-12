@@ -35,10 +35,10 @@ public class OauthServiceImpl implements OauthService {
     private final RefreshTokenService refreshTokenService;
 
     @Override
-    public ResponseEntity<?> getAuthToken(@RequestBody OauthCodeDto oauthCodeDto) {
+    public ResponseEntity<?> getAuthToken(@RequestBody OauthCodeDto oauthCodeDto){
         log.info("its getAuthToken OauthServiceImpl");
-//        return ResponseEntity.ok(getTokenFromCode(java.net.URLDecoder.decode(oauthCodeDto.getCode(), StandardCharsets.UTF_8)));
-        return ResponseEntity.ok(getTokenFromCode(oauthCodeDto.getCode()));
+        return ResponseEntity.ok(getTokenFromCode(java.net.URLDecoder.decode(oauthCodeDto.getCode(), StandardCharsets.UTF_8)));
+//        return ResponseEntity.ok(getTokenFromCode(oauthCodeDto.getCode()));
     }
 
     private ResponseEntity<?> getTokenFromCode(String code) {
@@ -56,10 +56,15 @@ public class OauthServiceImpl implements OauthService {
             log.info(payloadStr + "-its payload");
 
             ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                UserRegistrationDtoFromOauth userRegistrationDtoFromOauth = objectMapper.readValue(payloadStr, UserRegistrationDtoFromOauth.class);
 
-                log.info("objectMapper.readValue is complete");
+            UserRegistrationDtoFromOauth userRegistrationDtoFromOauth;
+            try {
+                userRegistrationDtoFromOauth = objectMapper.readValue(payloadStr, UserRegistrationDtoFromOauth.class);
+            } catch (JsonProcessingException e) {
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "json map error"), HttpStatus.BAD_REQUEST);
+            }
+
+            log.info("objectMapper.readValue is complete");
 
 
             String email = userRegistrationDtoFromOauth.getEmail();
@@ -70,9 +75,7 @@ public class OauthServiceImpl implements OauthService {
             }
             return ResponseEntity.ok(createJwtResponse(userOauthService.createNewUser(userRegistrationDtoFromOauth).getEmail()));
 
-            } catch (JsonProcessingException e) {
-                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "response error"), HttpStatus.BAD_REQUEST);
-            }
+
         }
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "response error"), HttpStatus.BAD_REQUEST);
     }

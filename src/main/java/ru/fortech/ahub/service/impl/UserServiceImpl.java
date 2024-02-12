@@ -62,16 +62,31 @@ public class UserServiceImpl implements UserService {
         return loadUser(user);
     }
 
+//    @Override
+//    public User createNewUser(UserRegistrationDto userRegistrationDto) {
+//        log.info("call method createNewUser from UserServiceImpl");
+//        User user = new User();
+//        user.setUserId(UUID.randomUUID());
+//        user.setFirstName(userRegistrationDto.getFirstName());
+//        user.setLastName(userRegistrationDto.getLastName());
+//        user.setPassword(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()));
+//        user.setUserRoles(new ArrayList<>(List.of(userRoleService.getUserRole())));
+//        user.setEnabled(true);
+//        userProfileService.createUserProfileFromNewUser(user);
+//        return userRepository.save(checkLoginType(userRegistrationDto, user));
+//    }
+
     @Override
     public User createNewUser(UserRegistrationDto userRegistrationDto) {
         log.info("call method createNewUser from UserServiceImpl");
-        User user = new User();
-        user.setUserId(UUID.randomUUID());
-        user.setFirstName(userRegistrationDto.getFirstName());
-        user.setLastName(userRegistrationDto.getLastName());
-        user.setPassword(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()));
-        user.setUserRoles(new ArrayList<>(List.of(userRoleService.getUserRole())));
-        user.setEnabled(true);
+        User user = User.builder()
+                .userId(UUID.randomUUID())
+                .firstName(userRegistrationDto.getFirstName())
+                .lastName(userRegistrationDto.getLastName())
+                .password(passwordEncoderConfiguration.passwordEncoder().encode(userRegistrationDto.getPassword()))
+                .userRoles(new ArrayList<>(List.of(userRoleService.getUserRole())))
+                .enabled(true)
+                .build();
         userProfileService.createUserProfileFromNewUser(user);
         return userRepository.save(checkLoginType(userRegistrationDto, user));
     }

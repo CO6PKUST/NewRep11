@@ -2,6 +2,7 @@ package ru.fortech.ahub.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ru.fortech.ahub.util.Gender;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class UserProfile {
     @Column(name = "user_id")
     private UUID userId;
     @Column(name = "gender")
-    private boolean gender;
+    private Gender gender;
     @Column(name = "about_me")
     private String aboutMe;
     @Column(name = "registration_date_time")

@@ -1,6 +1,5 @@
 package ru.fortech.ahub.service;
 
-import org.json.JSONObject;
 import ru.fortech.ahub.entity.User;
 import ru.fortech.ahub.service.dto.UserRegistrationDtoFromOauth;
 
